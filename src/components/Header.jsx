@@ -37,7 +37,7 @@ function Header() {
   return (
     <StyledHeader>
       <Link to="/">
-        <h1>Chat</h1>
+        <h1>Crew</h1>
       </Link>
       <RowDiv>
         <span>{info.nickname}</span>

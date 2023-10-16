@@ -1,16 +1,17 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import GlobalStyles from './styles/GlobalStyles';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Chat from './pages/Chat';
 import Auth from './components/Auth';
 import AppLayout from './components/AppLayout';
+import Home from './pages/Home';
 
 function App() {
+  const queryClient = new QueryClient();
 
-    const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalStyles />
@@ -18,8 +19,9 @@ function App() {
         <Routes>
           <Route element={<Auth />}>
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Login />} />
-              <Route path="/crew/:id" element={<Chat />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/crew/:id/chat" element={<Chat />} /> 
+              <Route path="/crew" element={<Chat />} />
             </Route>
           </Route>
           <Route path="/Login" element={<Login />} />

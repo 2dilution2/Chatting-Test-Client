@@ -21,24 +21,17 @@ const ColDiv = styled.div`
   gap: 2rem;
 `;
 
-function CreateChatRoom() {
+function CreateCrew() {
    // 기존 상태 값
    const [title, setTitle] = useState('');
-   const [thumbnailImgUrl, setThumbnailImgUrl] = useState('');
-   const [crewPlace, setCrewPlace] = useState('KOREA');
-   const [crewStatus, setCrewStatus] = useState('OPEN');
    const [maxCrew, setMaxCrew] = useState(2);
-   const [travelStart, setTravelStart] = useState('');
-   const [travelEnd, setTravelEnd] = useState('');
-   const [latitude, setLatitude] = useState(null);
-   const [longitude, setLongitude] = useState(null);
    const [crewContent, setCrewContent] = useState('');
 
-  const { createChatRoom, createStatus } = useMutationCreate();
+  const { createCrew, createStatus } = useMutationCreate();
 
   const onSubmit = (e) => {
     e.preventDefault();
-    createChatRoom({ title, thumbnailImgUrl, crewPlace, crewStatus, maxCrew, travelStart, travelEnd, latitude, longitude, crewContent });
+    createCrew({ title, maxCrew, crewContent });
   };
 
   return (
@@ -55,75 +48,14 @@ function CreateChatRoom() {
         </ColDiv>
 
         <ColDiv>
-          <label htmlFor="thumbnailImgUrl">Thumbnail Image URL</label>
-          <Input type="text" name="thumbnailImgUrl" value={thumbnailImgUrl} onChange={(e) => setThumbnailImgUrl(e.target.value)} />
-        </ColDiv>
-        
-        <ColDiv>
-          <label htmlFor="crewPlace">Crew Place</label>
-          <select name="crewPlace" value={crewPlace} onChange={(e) => setCrewPlace(e.target.value)}>
-            <option value="KOREA">KOREA</option>
-            <option value="ABROAD">ABROAD</option>
-          </select>
-        </ColDiv>
-        
-        <ColDiv>
-          <label htmlFor="crewStatus">Crew Status</label>
-          <select name="crewStatus" value={crewStatus} onChange={(e) => setCrewStatus(e.target.value)}>
-            <option value="OPEN">OPEN</option>
-            <option value="CLOSE">CLOSE</option>
-          </select>
-        </ColDiv>
-
-        <ColDiv>
           <label htmlFor="maxCrew">최대 인원</label>
           <Input
             type="number"
             min={2}
-            max={5}
+            max={6}
             name="maxCrew"
             value={maxCrew}
             onChange={(e) => setMaxCrew(Number(e.target.value))}
-          />
-        </ColDiv>
-
-        <ColDiv>
-          <label htmlFor="travelStart">Travel Start</label>
-          <Input
-            type="date"
-            name="travelStart"
-            value={travelStart}
-            onChange={(e) => setTravelStart(e.target.value)}
-          />
-        </ColDiv>
-
-        <ColDiv>
-          <label htmlFor="travelEnd">Travel End</label>
-          <Input
-            type="date"
-            name="travelEnd"
-            value={travelEnd}
-            onChange={(e) => setTravelEnd(e.target.value)}
-          />
-        </ColDiv>
-
-        <ColDiv>
-          <label htmlFor="latitude">Latitude</label>
-          <Input
-            type="number"
-            name="latitude"
-            value={latitude}
-            onChange={(e) => setLatitude(Number(e.target.value))}
-          />
-        </ColDiv>
-
-        <ColDiv>
-          <label htmlFor="longitude">Longitude</label>
-          <Input
-            type="number"
-            name="longitude"
-            value={longitude}
-            onChange={(e) => setLongitude(Number(e.target.value))}
           />
         </ColDiv>
 
@@ -147,4 +79,4 @@ function CreateChatRoom() {
   );
 }
 
-export default CreateChatRoom;
+export default CreateCrew;

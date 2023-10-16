@@ -1,17 +1,17 @@
 import styled from 'styled-components';
-import ChatMessageItem from './ChatMessageItem';
+import CrewMessageItem from './ChatMessageItem';
 
 const RowDiv = styled.div`
   flex-direction: column;
   gap: 1.6rem;
 `;
 
-function ChatMessageList() {
+function CrewMessageList() {
   return (
     <RowDiv>
-      <ChatMessageItem />
+      <CrewMessageItem />
     </RowDiv>
   );
 }
 
-export default ChatMessageList;
+export default CrewMessageList;

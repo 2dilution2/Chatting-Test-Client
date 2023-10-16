@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { privateApi, publicApi } from './baseApi';
 
@@ -50,7 +50,8 @@ privateApi.interceptors.response.use(
     async (error) => {
       const {
         config,
-        response: { status, code },
+        response: { status },
+        response: { data: { code } }
       } = error;
       if (status === 401 && code === 'E103') {
         // access token invalid
@@ -65,8 +66,12 @@ privateApi.interceptors.response.use(
         // reissue access token fail
         if (reissueStatus === 401 && response.data.code.includes('E20')) {
           toast.error(response.data.message);
-          const naivate = useNavigate();
-          naivate('/login');
+          // 기존의:
+          // const naivate = useNavigate();
+          // naivate('/login');
+
+          // 변경 후:
+          window.location.href = '/login';
         }
   
         // reissue access token success
@@ -76,7 +81,7 @@ privateApi.interceptors.response.use(
           originalRequest.headers.authorization = `Bearer ${accessToken}`;
   
           // request again with new access token
-          return privateApi(originalRequest);
+          return privateApi.request(originalRequest);
         }
       }
       return Promise.reject(error);

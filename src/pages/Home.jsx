@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import Button from '../components/Button';
-import CreateChatRoom from '../components/chat/CreateChatRoom';
-import ChatRoomList from '../components/chat/ChatRoomList';
+import CreateCrew from '../components/chat/CreateChatRoom';
+import CrewList from '../components/chat/ChatRoomList';
 
 const Main = styled.main`
   display: flex;
@@ -17,12 +17,12 @@ function Home() {
   return (
     <Main>
       <div>
-        <Button color="info" onClick={() => setOpen((is) => !is)}>
-          채팅방
+        <Button color="info" onClick={() => setOpen(prev => !prev)}>
+          채팅방 만들기
         </Button>
       </div>
-      {open && <CreateChatRoom />}
-      <ChatRoomList />
+      {open && <CreateCrew />}
+      <CrewList />
     </Main>
   );
 }

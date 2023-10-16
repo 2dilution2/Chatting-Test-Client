@@ -1,8 +1,8 @@
 import { privateApi } from './baseApi';
 
 // 채팅방 생성
-export const create = async (newChatRoom) => {
-  const { data } = await privateApi.post(`crew`, newChatRoom);
+export const create = async (newCrew) => {
+  const { data } = await privateApi.post(`crew`, newCrew);
   return data;
 };
 

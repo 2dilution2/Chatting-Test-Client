@@ -21,19 +21,20 @@ const Span = styled.span`
   }
 `;
 
-function ChatRoomItem({ room }) {
+function CrewItem({ crewRoom }) {
   return (
-    <Link to={`/chat/${room.chatRoomId}`}>
+    <Link to={`/crew/${crewRoom.crewId}/chat`}> 
       <Li>
-        <h2>{room.title}</h2>
-        <p>{room.desc}</p>
+        <h2>{crewRoom.title}</h2>
+        <p>{crewRoom.crewContent}</p>
         <Span>
           <HiOutlineChatBubbleOvalLeft />
-          현재 인원 : {room.chatRoomMemberCnt} / {room.maxParticipant}
+          현재 인원 : {crewRoom.crewMemberCnt} / {crewRoom.maxCrew}
         </Span>
       </Li>
     </Link>
   );
 }
 
-export default ChatRoomItem;
+
+export default CrewItem;

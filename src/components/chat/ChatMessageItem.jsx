@@ -19,7 +19,7 @@ const P = styled.p`
   text-align: center;
 `;
 
-function ChatMessageItem({ item }) {
+function CrewMessageItem({ item }) {
   if (item.type === 'ENTER') {
     return <P>{item.content}</P>;
   }
@@ -32,4 +32,4 @@ function ChatMessageItem({ item }) {
   );
 }
 
-export default ChatMessageItem;
+export default CrewMessageItem;

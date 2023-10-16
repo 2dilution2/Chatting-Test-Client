@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import ChatRoom from '../components/chat/ChatRoom';
+import CrewRoom from '../components/chat/ChatRoom';
 
 const Div = styled.div``;
 
@@ -10,7 +10,7 @@ function Chat() {
   return (
     <Div>
       <h1>채팅방 #{id}</h1>
-      <ChatRoom />
+      <CrewRoom />
     </Div>
   );
 }
