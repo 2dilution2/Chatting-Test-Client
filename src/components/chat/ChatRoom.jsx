@@ -2,7 +2,7 @@ import * as StompJs from '@stomp/stompjs';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import CrewMessageItem from './ChatMessageItem';
 import Input from '../Input';
 import Button from '../Button';
@@ -44,7 +44,7 @@ function CrewRoom() {
   const queryClient = useQueryClient();
   const { nickname } = queryClient.getQueryData(['info']);
 
-  const enter = async () => {
+  const enter = useCallback(async () => {
     try {
       const response = await fetch(`/api/crew/${id}/chat`, {
         method: 'GET',
@@ -63,22 +63,28 @@ function CrewRoom() {
     } catch (error) {
       console.error('Error while entering the chat room:', error);
     }
-  };
+  }, [id]);
   
-  const subscribe = () => {
+  const subscribe = useCallback(() => {
     client.current.subscribe(`/exchange/chat.exchange/crew.${id}`, ({ body }) => {
       setCrewHistory((prevHistory) => [...prevHistory, JSON.parse(body)]);
     });
-  };
+  }, [id]);
 
-  const connect = () => {
+  const connect = useCallback(() => {
     client.current = new StompJs.Client({
       brokerURL: 'ws://localhost:8080/ws',
-      connectHeaders: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+      connectHeaders: { 
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        'RefreshToken': localStorage.getItem('refreshToken')
+      },      
       onConnect: () => {
         console.info('stomp success');
-        subscribe();
+        subscribe(); // 이 위치로 옮김
         enter();
+      },
+      onStompError: (error) => {
+        console.error('STOMP error:', error);
       },
       debug: (str) => {
         console.info(str);
@@ -86,9 +92,9 @@ function CrewRoom() {
       reconnectDelay: 5000,
     });
     client.current.activate();
-  };
+  }, [subscribe, enter]);
 
-  const send = (message) => {
+  const send = useCallback((message) => {
     if (client.current && client.current.connected) {
       console.info('try to send message');
       client.current.publish({
@@ -103,7 +109,7 @@ function CrewRoom() {
       console.info('send success');
       setText('');
     }
-  };
+  }, [id, nickname]);
 
   const disconnect = () => {
     client.current.deactivate();
@@ -121,7 +127,28 @@ function CrewRoom() {
     if (text.trim()) send(text);
   };
 
-  const fetchChatHistory = async () => {
+  // const fetchChatHistory = async () => {
+  //   try {
+  //     const response = await fetch(`/api/crew/${id}/chat`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+  //       }
+  //     });
+  
+  //     const data = await response.json();
+  
+  //     if (response.ok) {
+  //       setCrewHistory(data);
+  //     } else {
+  //       console.error('Failed to fetch chat history:', data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error while fetching chat history:', error);
+  //   }
+  // };
+
+  const fetchChatHistory = useCallback(async () => {
     try {
       const response = await fetch(`/api/crew/${id}/chat`, {
         method: 'GET',
@@ -130,18 +157,24 @@ function CrewRoom() {
         }
       });
   
-      const data = await response.json();
-  
-      if (response.ok) {
-        setCrewHistory(data);
-      } else {
-        console.error('Failed to fetch chat history:', data);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Failed response:', text);
+        return;
       }
+    
+      const data = await response.json();
+      setCrewHistory(data);
     } catch (error) {
       console.error('Error while fetching chat history:', error);
     }
-  };
+  }, [id]);
   
+  useEffect(() => {
+    fetchChatHistory();
+    connect();
+    return () => disconnect();
+  }, [connect, fetchChatHistory]);
 
   return (
     <ColDiv>
