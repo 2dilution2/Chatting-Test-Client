@@ -1,6 +1,6 @@
 import * as StompJs from '@stomp/stompjs';
 import { useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import CrewMessageItem from './ChatMessageItem';
@@ -40,9 +40,10 @@ function CrewRoom() {
   const [crewHistory, setCrewHistory] = useState([]);
   const client = useRef();
 
-  const { id } = useParams();
   const queryClient = useQueryClient();
-  const { nickname } = queryClient.getQueryData(['info']);
+  const info = queryClient.getQueryData(['info']);
+
+  const { id } = useParams();
 
   const enter = useCallback(async () => {
     try {
@@ -73,7 +74,7 @@ function CrewRoom() {
 
   const connect = useCallback(() => {
     client.current = new StompJs.Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: 'ws://localhost:8080/ws/websocket',
       connectHeaders: { 
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         'RefreshToken': localStorage.getItem('refreshToken')
@@ -102,14 +103,14 @@ function CrewRoom() {
         body: JSON.stringify({
           type: 'TALK',
           crewId: id,
-          sender: nickname,
+          sender: info.nickname,
           content: message,
         }),
       });
       console.info('send success');
       setText('');
     }
-  }, [id, nickname]);
+  }, [id, info.nickname]);
 
   const disconnect = () => {
     client.current.deactivate();
@@ -127,27 +128,6 @@ function CrewRoom() {
     if (text.trim()) send(text);
   };
 
-  // const fetchChatHistory = async () => {
-  //   try {
-  //     const response = await fetch(`/api/crew/${id}/chat`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-  //       }
-  //     });
-  
-  //     const data = await response.json();
-  
-  //     if (response.ok) {
-  //       setCrewHistory(data);
-  //     } else {
-  //       console.error('Failed to fetch chat history:', data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error while fetching chat history:', error);
-  //   }
-  // };
-
   const fetchChatHistory = useCallback(async () => {
     try {
       const response = await fetch(`/api/crew/${id}/chat`, {
@@ -159,7 +139,7 @@ function CrewRoom() {
   
       if (!response.ok) {
         const text = await response.text();
-        console.error('Failed response:', text);
+        console.log('Failed response:', text);
         return;
       }
     
@@ -170,11 +150,21 @@ function CrewRoom() {
     }
   }, [id]);
   
+  const [hasFetchedHistory, setHasFetchedHistory] = useState(false);
+
+  // 첫 번째 useEffect
   useEffect(() => {
-    fetchChatHistory();
-    connect();
-    return () => disconnect();
-  }, [connect, fetchChatHistory]);
+      fetchChatHistory();
+      setHasFetchedHistory(true);
+  }, []);
+  
+  // 두 번째 useEffect
+  useEffect(() => {
+      if (hasFetchedHistory) {
+          connect();
+      }
+  }, [hasFetchedHistory]);
+  
 
   return (
     <ColDiv>

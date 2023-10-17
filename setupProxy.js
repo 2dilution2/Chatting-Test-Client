@@ -1,6 +1,6 @@
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-export default (app) => {
+const setupProxy = (app) => {
   app.use(
     'ws',
     createProxyMiddleware({
@@ -9,3 +9,5 @@ export default (app) => {
     })
   );
 };
+
+export default setupProxy;
